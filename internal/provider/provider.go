@@ -131,6 +131,7 @@ func (p *langfuseProvider) Resources(ctx context.Context) []func() resource.Reso
 	return []func() resource.Resource{
 		newProjectResource,
 		newProjectMemberResource,
+		newOrganizationMemberResource,
 		newScoreConfigResource,
 		newAnnotationQueueResource,
 		newCustomModelResource,
@@ -138,6 +139,10 @@ func (p *langfuseProvider) Resources(ctx context.Context) []func() resource.Reso
 		newPromptResource,
 		newProjectAPIKeyResource,
 		newBlobStorageIntegrationResource,
+		newDatasetResource,
+		newDatasetItemResource,
+		newEvaluationRuleResource,
+		newEvaluatorResource,
 	}
 }
 

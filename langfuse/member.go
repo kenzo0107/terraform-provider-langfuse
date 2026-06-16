@@ -86,3 +86,43 @@ func (c *Client) DeleteProjectMembership(ctx context.Context, projectID, userID 
 	_, err := c.do(ctx, http.MethodDelete, path, payload)
 	return err
 }
+
+func (c *Client) GetOrganizationMembership(ctx context.Context, userID string) (*Membership, error) {
+	body, err := c.do(ctx, http.MethodGet, "/api/public/organizations/memberships", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp getMembershipsResponse
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshaling organization memberships response: %w", err)
+	}
+
+	for _, m := range resp.Memberships {
+		if m.UserID == userID {
+			return m, nil
+		}
+	}
+	return nil, &APIError{StatusCode: http.StatusNotFound, Body: fmt.Sprintf("organization membership for user %q not found", userID)}
+}
+
+func (c *Client) UpsertOrganizationMembership(ctx context.Context, userID string, role MembershipRole) (*Membership, error) {
+	payload := upsertMembershipRequest{UserID: userID, Role: role}
+	body, err := c.do(ctx, http.MethodPut, "/api/public/organizations/memberships", payload)
+	if err != nil {
+		return nil, err
+	}
+
+	var m Membership
+	if err := json.Unmarshal(body, &m); err != nil {
+		return nil, fmt.Errorf("unmarshaling upsert organization membership response: %w", err)
+	}
+
+	return &m, nil
+}
+
+func (c *Client) DeleteOrganizationMembership(ctx context.Context, userID string) error {
+	payload := deleteMembershipRequest{UserID: userID}
+	_, err := c.do(ctx, http.MethodDelete, "/api/public/organizations/memberships", payload)
+	return err
+}
