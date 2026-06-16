@@ -130,6 +130,23 @@ func (p *langfuseProvider) Configure(ctx context.Context, req provider.Configure
 func (p *langfuseProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		newProjectResource,
+		newProjectMemberResource,
+		newOrganizationMemberResource,
+		newScoreConfigResource,
+		newAnnotationQueueResource,
+		newCustomModelResource,
+		newLLMConnectionResource,
+		newPromptResource,
+		newProjectAPIKeyResource,
+		newBlobStorageIntegrationResource,
+		newDatasetResource,
+		newDatasetItemResource,
+		newEvaluationRuleResource,
+		newEvaluatorResource,
+		newAnnotationQueueItemResource,
+		newScoreResource,
+		newSCIMUserResource,
+		newCommentResource,
 	}
 }
 

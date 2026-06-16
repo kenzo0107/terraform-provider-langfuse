@@ -1,0 +1,51 @@
+---
+page_title: "langfuse_evaluator Resource - terraform-provider-langfuse"
+subcategory: ""
+description: |-
+  Manages a Langfuse evaluator.
+---
+
+# langfuse_evaluator (Resource)
+
+Manages a Langfuse evaluator.
+
+> **Warning:** This resource uses the unstable Langfuse API (`/api/public/unstable/`) and may change without notice.
+
+## Example Usage
+
+```terraform
+resource "langfuse_evaluator" "example" {
+  name = "llm-quality-evaluator"
+  type = "llm_as_judge"
+
+  prompt = jsonencode({
+    model       = "gpt-4"
+    system      = "You are an expert evaluator."
+    temperature = 0
+  })
+}
+```
+
+## Schema
+
+### Required
+
+- `name` (String) The name of the evaluator.
+- `type` (String) The type of the evaluator. Must be `llm_as_judge` or `code`. Changing this creates a new evaluator.
+
+### Optional
+
+- `prompt` (String) A JSON string representing the prompt configuration (for `type = "llm_as_judge"`).
+- `source_code` (String) The source code of the evaluator (for `type = "code"`).
+
+### Read-Only
+
+- `id` (String) The unique identifier of the evaluator.
+
+## Import
+
+Import is supported by evaluator ID:
+
+```shell
+terraform import langfuse_evaluator.example <evaluator_id>
+```

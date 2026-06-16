@@ -1,0 +1,42 @@
+---
+page_title: "langfuse_project_member Resource - terraform-provider-langfuse"
+subcategory: ""
+description: |-
+  Manages a member's role within a Langfuse project.
+---
+
+# langfuse_project_member (Resource)
+
+Manages a member's role within a Langfuse project. The user must already be a member of the organization.
+
+## Example Usage
+
+```terraform
+resource "langfuse_project_member" "example" {
+  project_id = langfuse_project.example.id
+  user_id    = "user-id-here"
+  role       = "MEMBER"
+}
+```
+
+## Schema
+
+### Required
+
+- `project_id` (String) The ID of the project.
+- `user_id` (String) The ID of the user to add to the project.
+- `role` (String) The role to assign to the user. Must be one of `OWNER`, `ADMIN`, `MEMBER`, or `VIEWER`.
+
+### Read-Only
+
+- `id` (String) The unique identifier of the membership (format: `{project_id}/{user_id}`).
+- `email` (String) The email address of the member.
+- `name` (String) The display name of the member.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+terraform import langfuse_project_member.example <project_id>/<user_id>
+```

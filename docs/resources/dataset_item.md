@@ -1,0 +1,45 @@
+---
+page_title: "langfuse_dataset_item Resource - terraform-provider-langfuse"
+subcategory: ""
+description: |-
+  Manages a Langfuse dataset item.
+---
+
+# langfuse_dataset_item (Resource)
+
+Manages a Langfuse dataset item.
+
+## Example Usage
+
+```terraform
+resource "langfuse_dataset_item" "example" {
+  dataset_name    = langfuse_dataset.example.name
+  input           = jsonencode({ question = "What is the capital of France?" })
+  expected_output = jsonencode({ answer = "Paris" })
+  status          = "ACTIVE"
+}
+```
+
+## Schema
+
+### Required
+
+- `dataset_name` (String) The name of the dataset this item belongs to. Changing this creates a new item.
+
+### Optional
+
+- `input` (String) The input for the dataset item as a JSON string. Changing this creates a new item.
+- `expected_output` (String) The expected output for the dataset item as a JSON string. Changing this creates a new item.
+- `status` (String) The status of the item. Must be `ACTIVE` or `ARCHIVED`. Changing this creates a new item.
+
+### Read-Only
+
+- `id` (String) The unique identifier of the dataset item.
+
+## Import
+
+Import is supported by item ID:
+
+```shell
+terraform import langfuse_dataset_item.example <item_id>
+```

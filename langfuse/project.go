@@ -85,3 +85,63 @@ func (c *Client) DeleteProject(ctx context.Context, id string) error {
 	_, err := c.do(ctx, http.MethodDelete, "/api/public/projects/"+id, nil)
 	return err
 }
+
+type APIKey struct {
+	ID               string  `json:"id"`
+	PublicKey        string  `json:"publicKey"`
+	DisplaySecretKey string  `json:"displaySecretKey"`
+	Note             *string `json:"note,omitempty"`
+}
+
+type APIKeyCreated struct {
+	ID               string  `json:"id"`
+	PublicKey        string  `json:"publicKey"`
+	SecretKey        string  `json:"secretKey"`
+	DisplaySecretKey string  `json:"displaySecretKey"`
+	Note             *string `json:"note,omitempty"`
+}
+
+type listAPIKeysResponse struct {
+	APIKeys []APIKey `json:"apiKeys"`
+}
+
+type createAPIKeyRequest struct {
+	Note *string `json:"note,omitempty"`
+}
+
+func (c *Client) GetProjectAPIKeys(ctx context.Context, projectID string) ([]APIKey, error) {
+	path := fmt.Sprintf("/api/public/projects/%s/api-keys", projectID)
+	body, err := c.do(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp listAPIKeysResponse
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshaling API keys response: %w", err)
+	}
+
+	return resp.APIKeys, nil
+}
+
+func (c *Client) CreateProjectAPIKey(ctx context.Context, projectID string, note *string) (*APIKeyCreated, error) {
+	path := fmt.Sprintf("/api/public/projects/%s/api-keys", projectID)
+	payload := createAPIKeyRequest{Note: note}
+	body, err := c.do(ctx, http.MethodPost, path, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	var key APIKeyCreated
+	if err := json.Unmarshal(body, &key); err != nil {
+		return nil, fmt.Errorf("unmarshaling create API key response: %w", err)
+	}
+
+	return &key, nil
+}
+
+func (c *Client) DeleteProjectAPIKey(ctx context.Context, projectID, apiKeyID string) error {
+	path := fmt.Sprintf("/api/public/projects/%s/api-keys/%s", projectID, apiKeyID)
+	_, err := c.do(ctx, http.MethodDelete, path, nil)
+	return err
+}
