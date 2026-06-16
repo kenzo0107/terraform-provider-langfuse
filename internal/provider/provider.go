@@ -132,6 +132,12 @@ func (p *langfuseProvider) Resources(ctx context.Context) []func() resource.Reso
 		newProjectResource,
 		newProjectMemberResource,
 		newScoreConfigResource,
+		newAnnotationQueueResource,
+		newCustomModelResource,
+		newLLMConnectionResource,
+		newPromptResource,
+		newProjectAPIKeyResource,
+		newBlobStorageIntegrationResource,
 	}
 }
 
