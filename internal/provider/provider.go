@@ -143,6 +143,10 @@ func (p *langfuseProvider) Resources(ctx context.Context) []func() resource.Reso
 		newDatasetItemResource,
 		newEvaluationRuleResource,
 		newEvaluatorResource,
+		newAnnotationQueueItemResource,
+		newScoreResource,
+		newSCIMUserResource,
+		newCommentResource,
 	}
 }
 
