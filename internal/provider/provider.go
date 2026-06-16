@@ -130,6 +130,8 @@ func (p *langfuseProvider) Configure(ctx context.Context, req provider.Configure
 func (p *langfuseProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		newProjectResource,
+		newProjectMemberResource,
+		newScoreConfigResource,
 	}
 }
 
