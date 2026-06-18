@@ -62,7 +62,7 @@ func (m *mockLangfuseServer) handleProjectsCollection(w http.ResponseWriter, r *
 			projects = append(projects, p)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]any{"data": projects})
+		_ = json.NewEncoder(w).Encode(map[string]any{"data": projects})
 	case http.MethodPost:
 		var req struct {
 			Name string `json:"name"`
@@ -77,7 +77,7 @@ func (m *mockLangfuseServer) handleProjectsCollection(w http.ResponseWriter, r *
 		m.projects[p.ID] = p
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(p)
+		_ = json.NewEncoder(w).Encode(p)
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -108,7 +108,7 @@ func (m *mockLangfuseServer) handleProjectByID(w http.ResponseWriter, r *http.Re
 		p.Name = req.Name
 		m.projects[id] = p
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(p)
+		_ = json.NewEncoder(w).Encode(p)
 	case http.MethodDelete:
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -118,7 +118,7 @@ func (m *mockLangfuseServer) handleProjectByID(w http.ResponseWriter, r *http.Re
 		}
 		delete(m.projects, id)
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{}`))
+		_, _ = w.Write([]byte(`{}`))
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}

@@ -8,20 +8,20 @@ import (
 	"testing"
 )
 
-func newTestServer(t *testing.T, handler http.HandlerFunc) (*httptest.Server, *Client) {
+func newTestServer(t *testing.T, handler http.HandlerFunc) *Client {
 	t.Helper()
 	srv := httptest.NewServer(handler)
 	t.Cleanup(srv.Close)
-	return srv, New("pub", "sec", WithHost(srv.URL))
+	return New("pub", "sec", WithHost(srv.URL))
 }
 
 func TestListProjects(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet || r.URL.Path != "/api/public/projects" {
 			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(listProjectsResponse{
+		_ = json.NewEncoder(w).Encode(listProjectsResponse{
 			Data: []Project{
 				{ID: "id-1", Name: "project-1"},
 				{ID: "id-2", Name: "project-2"},
@@ -45,9 +45,9 @@ func TestListProjects(t *testing.T) {
 }
 
 func TestListProjects_Empty(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(listProjectsResponse{Data: []Project{}})
+		_ = json.NewEncoder(w).Encode(listProjectsResponse{Data: []Project{}})
 	}))
 
 	projects, err := client.ListProjects(context.Background())
@@ -60,9 +60,9 @@ func TestListProjects_Empty(t *testing.T) {
 }
 
 func TestListProjects_APIError(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal server error"))
+		_, _ = w.Write([]byte("internal server error"))
 	}))
 
 	_, err := client.ListProjects(context.Background())
@@ -77,9 +77,9 @@ func TestListProjects_APIError(t *testing.T) {
 }
 
 func TestGetProject_Found(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(listProjectsResponse{
+		_ = json.NewEncoder(w).Encode(listProjectsResponse{
 			Data: []Project{
 				{ID: "id-1", Name: "project-1"},
 				{ID: "id-2", Name: "project-2"},
@@ -97,9 +97,9 @@ func TestGetProject_Found(t *testing.T) {
 }
 
 func TestGetProject_NotFound(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(listProjectsResponse{
+		_ = json.NewEncoder(w).Encode(listProjectsResponse{
 			Data: []Project{{ID: "id-1", Name: "project-1"}},
 		})
 	}))
@@ -118,7 +118,7 @@ func TestGetProject_NotFound(t *testing.T) {
 }
 
 func TestCreateProject(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost || r.URL.Path != "/api/public/projects" {
 			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
 		}
@@ -131,7 +131,7 @@ func TestCreateProject(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(Project{ID: "new-id", Name: "new-project"})
+		_ = json.NewEncoder(w).Encode(Project{ID: "new-id", Name: "new-project"})
 	}))
 
 	project, err := client.CreateProject(context.Background(), "new-project")
@@ -144,9 +144,9 @@ func TestCreateProject(t *testing.T) {
 }
 
 func TestCreateProject_APIError(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"message":"invalid name"}`))
+		_, _ = w.Write([]byte(`{"message":"invalid name"}`))
 	}))
 
 	_, err := client.CreateProject(context.Background(), "")
@@ -156,7 +156,7 @@ func TestCreateProject_APIError(t *testing.T) {
 }
 
 func TestUpdateProject(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPatch || r.URL.Path != "/api/public/projects/id-1" {
 			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
 		}
@@ -168,7 +168,7 @@ func TestUpdateProject(t *testing.T) {
 			t.Errorf("expected name %q, got %q", "renamed", req.Name)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Project{ID: "id-1", Name: "renamed"})
+		_ = json.NewEncoder(w).Encode(Project{ID: "id-1", Name: "renamed"})
 	}))
 
 	project, err := client.UpdateProject(context.Background(), "id-1", "renamed")
@@ -181,9 +181,9 @@ func TestUpdateProject(t *testing.T) {
 }
 
 func TestUpdateProject_NotFound(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"message":"not found"}`))
+		_, _ = w.Write([]byte(`{"message":"not found"}`))
 	}))
 
 	_, err := client.UpdateProject(context.Background(), "nonexistent", "name")
@@ -198,12 +198,12 @@ func TestUpdateProject_NotFound(t *testing.T) {
 }
 
 func TestDeleteProject(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodDelete || r.URL.Path != "/api/public/projects/id-1" {
 			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{}`))
+		_, _ = w.Write([]byte(`{}`))
 	}))
 
 	err := client.DeleteProject(context.Background(), "id-1")
@@ -213,9 +213,9 @@ func TestDeleteProject(t *testing.T) {
 }
 
 func TestDeleteProject_NotFound(t *testing.T) {
-	_, client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := newTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"message":"not found"}`))
+		_, _ = w.Write([]byte(`{"message":"not found"}`))
 	}))
 
 	err := client.DeleteProject(context.Background(), "nonexistent")

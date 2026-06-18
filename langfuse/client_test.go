@@ -41,7 +41,7 @@ func TestDo_Success(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"key":"value"}`))
+		_, _ = w.Write([]byte(`{"key":"value"}`))
 	}))
 	defer srv.Close()
 
@@ -58,7 +58,7 @@ func TestDo_Success(t *testing.T) {
 func TestDo_APIError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(`{"message":"Unauthorized"}`))
+		_, _ = w.Write([]byte(`{"message":"Unauthorized"}`))
 	}))
 	defer srv.Close()
 
@@ -79,7 +79,7 @@ func TestDo_APIError(t *testing.T) {
 func TestDo_NotFound(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"message":"Not Found"}`))
+		_, _ = w.Write([]byte(`{"message":"Not Found"}`))
 	}))
 	defer srv.Close()
 
@@ -100,7 +100,7 @@ func TestDo_WithBody(t *testing.T) {
 			t.Errorf("expected Content-Type application/json, got %s", r.Header.Get("Content-Type"))
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{}`))
+		_, _ = w.Write([]byte(`{}`))
 	}))
 	defer srv.Close()
 
