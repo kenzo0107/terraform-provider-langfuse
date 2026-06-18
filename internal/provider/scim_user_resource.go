@@ -26,14 +26,14 @@ type scimUserResource struct {
 }
 
 type scimUserResourceModel struct {
-	ID          types.String `tfsdk:"id"`
-	UserName    types.String `tfsdk:"user_name"`
-	GivenName   types.String `tfsdk:"given_name"`
-	FamilyName  types.String `tfsdk:"family_name"`
-	Email       types.String `tfsdk:"email"`
-	Active      types.Bool   `tfsdk:"active"`
-	ExternalID  types.String `tfsdk:"external_id"`
-	Password    types.String `tfsdk:"password"`
+	ID         types.String `tfsdk:"id"`
+	UserName   types.String `tfsdk:"user_name"`
+	GivenName  types.String `tfsdk:"given_name"`
+	FamilyName types.String `tfsdk:"family_name"`
+	Email      types.String `tfsdk:"email"`
+	Active     types.Bool   `tfsdk:"active"`
+	ExternalID types.String `tfsdk:"external_id"`
+	Password   types.String `tfsdk:"password"`
 }
 
 func (r *scimUserResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -246,12 +246,12 @@ func (r *scimUserResource) ImportState(ctx context.Context, req resource.ImportS
 	}
 
 	state := scimUserResourceModel{
-		ID:       types.StringValue(u.ID),
-		UserName: types.StringValue(u.UserName),
-		Active:   types.BoolValue(u.Active),
-		GivenName: types.StringValue(u.Name.GivenName),
+		ID:         types.StringValue(u.ID),
+		UserName:   types.StringValue(u.UserName),
+		Active:     types.BoolValue(u.Active),
+		GivenName:  types.StringValue(u.Name.GivenName),
 		FamilyName: types.StringValue(u.Name.FamilyName),
-		Password: types.StringNull(),
+		Password:   types.StringNull(),
 	}
 	if len(u.Emails) > 0 {
 		state.Email = types.StringValue(u.Emails[0].Value)

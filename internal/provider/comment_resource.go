@@ -205,11 +205,11 @@ func (r *commentResource) ImportState(ctx context.Context, req resource.ImportSt
 	}
 
 	state := commentResourceModel{
-		ID:        types.StringValue(cm.ID),
-		ProjectID: types.StringValue(cm.ProjectID),
+		ID:         types.StringValue(cm.ID),
+		ProjectID:  types.StringValue(cm.ProjectID),
 		ObjectType: types.StringValue(cm.ObjectType),
-		ObjectID:  types.StringValue(cm.ObjectID),
-		Content:   types.StringValue(cm.Content),
+		ObjectID:   types.StringValue(cm.ObjectID),
+		Content:    types.StringValue(cm.Content),
 	}
 	if cm.AuthorUserID != nil {
 		state.AuthorUserID = types.StringValue(*cm.AuthorUserID)

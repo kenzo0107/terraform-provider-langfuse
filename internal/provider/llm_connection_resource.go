@@ -28,7 +28,7 @@ type llmConnectionResource struct {
 type llmConnectionResourceModel struct {
 	ID                types.String `tfsdk:"id"`
 	Name              types.String `tfsdk:"name"`
-	Provider          types.String `tfsdk:"provider"`
+	Adapter           types.String `tfsdk:"adapter"`
 	BaseURL           types.String `tfsdk:"base_url"`
 	APIKey            types.String `tfsdk:"api_key"`
 	WithDefaultModels types.Bool   `tfsdk:"with_default_models"`
@@ -56,8 +56,8 @@ func (r *llmConnectionResource) Schema(ctx context.Context, req resource.SchemaR
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"provider": schema.StringAttribute{
-				MarkdownDescription: "The LLM provider (e.g. `openai`, `anthropic`).",
+			"adapter": schema.StringAttribute{
+				MarkdownDescription: "The LLM adapter / provider (e.g. `openai`, `anthropic`). Maps to the Langfuse `provider` field. Named `adapter` because `provider` is a reserved attribute name in Terraform.",
 				Required:            true,
 			},
 			"base_url": schema.StringAttribute{
@@ -107,7 +107,7 @@ func (r *llmConnectionResource) Create(ctx context.Context, req resource.CreateR
 
 	upsertReq := &langfuse.UpsertLLMConnectionRequest{
 		Name:     plan.Name.ValueString(),
-		Provider: plan.Provider.ValueString(),
+		Provider: plan.Adapter.ValueString(),
 	}
 	if !plan.BaseURL.IsNull() && !plan.BaseURL.IsUnknown() {
 		v := plan.BaseURL.ValueString()
@@ -133,7 +133,7 @@ func (r *llmConnectionResource) Create(ctx context.Context, req resource.CreateR
 
 	plan.ID = types.StringValue(conn.ID)
 	plan.Name = types.StringValue(conn.Name)
-	plan.Provider = types.StringValue(conn.Provider)
+	plan.Adapter = types.StringValue(conn.Provider)
 	plan.WithDefaultModels = types.BoolValue(conn.WithDefaultModels)
 
 	if conn.BaseURL != nil {
@@ -168,7 +168,7 @@ func (r *llmConnectionResource) Read(ctx context.Context, req resource.ReadReque
 
 	state.ID = types.StringValue(conn.ID)
 	state.Name = types.StringValue(conn.Name)
-	state.Provider = types.StringValue(conn.Provider)
+	state.Adapter = types.StringValue(conn.Provider)
 	state.WithDefaultModels = types.BoolValue(conn.WithDefaultModels)
 
 	if conn.BaseURL != nil {
@@ -191,7 +191,7 @@ func (r *llmConnectionResource) Update(ctx context.Context, req resource.UpdateR
 
 	upsertReq := &langfuse.UpsertLLMConnectionRequest{
 		Name:     state.Name.ValueString(),
-		Provider: plan.Provider.ValueString(),
+		Provider: plan.Adapter.ValueString(),
 	}
 	if !plan.BaseURL.IsNull() && !plan.BaseURL.IsUnknown() {
 		v := plan.BaseURL.ValueString()
@@ -217,7 +217,7 @@ func (r *llmConnectionResource) Update(ctx context.Context, req resource.UpdateR
 
 	state.ID = types.StringValue(conn.ID)
 	state.Name = types.StringValue(conn.Name)
-	state.Provider = types.StringValue(conn.Provider)
+	state.Adapter = types.StringValue(conn.Provider)
 	state.WithDefaultModels = types.BoolValue(conn.WithDefaultModels)
 
 	if conn.BaseURL != nil {
@@ -266,7 +266,7 @@ func (r *llmConnectionResource) ImportState(ctx context.Context, req resource.Im
 	state := llmConnectionResourceModel{
 		ID:                types.StringValue(conn.ID),
 		Name:              types.StringValue(conn.Name),
-		Provider:          types.StringValue(conn.Provider),
+		Adapter:           types.StringValue(conn.Provider),
 		WithDefaultModels: types.BoolValue(conn.WithDefaultModels),
 		// api_key cannot be imported.
 		APIKey: types.StringNull(),

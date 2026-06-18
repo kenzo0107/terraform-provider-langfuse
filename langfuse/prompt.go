@@ -50,11 +50,11 @@ func (c *Client) CreatePrompt(ctx context.Context, req *CreatePromptRequest) (*P
 	var payload any
 	if req.Type == "chat" {
 		payload = struct {
-			Name     string        `json:"name"`
-			Type     string        `json:"type"`
-			Prompt   []ChatMessage `json:"prompt"`
-			Labels   []string      `json:"labels,omitempty"`
-			Tags     []string      `json:"tags,omitempty"`
+			Name   string        `json:"name"`
+			Type   string        `json:"type"`
+			Prompt []ChatMessage `json:"prompt"`
+			Labels []string      `json:"labels,omitempty"`
+			Tags   []string      `json:"tags,omitempty"`
 		}{
 			Name:   req.Name,
 			Type:   req.Type,
