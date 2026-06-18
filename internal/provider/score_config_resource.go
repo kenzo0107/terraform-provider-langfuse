@@ -151,7 +151,7 @@ func categoriesFromModel(ctx context.Context, list types.List) ([]*langfuse.Conf
 	return cats, nil
 }
 
-func categoriesToList(ctx context.Context, cats []*langfuse.ConfigCategory) (types.List, error) {
+func categoriesToList(_ context.Context, cats []*langfuse.ConfigCategory) (types.List, error) {
 	if len(cats) == 0 {
 		return types.ListValueMust(types.ObjectType{AttrTypes: categoryAttrTypes}, []attr.Value{}), nil
 	}
